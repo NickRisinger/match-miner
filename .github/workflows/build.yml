@@ -29,7 +29,7 @@ jobs:
     # 4. Собираем исполняемый файл
     - name: Build executable
       run: |
-        pyinstaller --onefile --name match_miner match_miner.py
+        pyinstaller match_miner.spec
 
     # 5. Загружаем результат сборки как артефакт
     - name: Upload artifact
