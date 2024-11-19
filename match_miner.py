@@ -9,9 +9,6 @@ if __name__ == "__main__":
     links = []
 
     while True:
-        # if len(links) > 0:
-        #     break
-
         try:
             link = input("Введите ссылку: ").strip()
             if link == "break":
