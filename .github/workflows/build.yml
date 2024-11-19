@@ -1,0 +1,39 @@
+name: Build App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    # 1. Клонируем репозиторий
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Устанавливаем Python
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    # 3. Устанавливаем зависимости
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. Собираем исполняемый файл
+    - name: Build executable
+      run: |
+        pyinstaller --onefile --name match_miner match_miner.py
+
+    # 5. Загружаем результат сборки как артефакт
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: dist/match_miner.exe
