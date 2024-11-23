@@ -6,7 +6,9 @@ if __name__ == "__main__":
     print("Введите ссылки формата https://www.flashscorekz.com/match/<ID>/#/match-summary.")
     print("Введите ссылки по одной. Напишите 'break', чтобы завершить.")
 
-    links = []
+    links = [
+        'https://www.flashscorekz.com/match/EubK3NNG/#/match-summary'
+    ]
 
     while True:
         try:

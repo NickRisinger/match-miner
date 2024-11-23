@@ -8,6 +8,13 @@ from logger import logger
 class BaseParser:
     def __init__(self, driver: WebDriver):
         self.driver = driver
+        self.api_key = None
+
+    def auth(self):
+        self.driver.get("https://www.flashscorekz.com/")
+
+        self.api_key = self.driver.execute_script("return window.feed_sign;")
+
 
     def find(self, by: str, value: str) -> WebElement | None:
         try:

@@ -16,7 +16,7 @@ class PlayerParser(BaseParser):
                 time.sleep(4)
 
                 player = {
-                    "name": self.get_text(By.CSS_SELECTOR, ".playerHeader__nameWrapper div"),
+                    "name": self.get_text(By.CSS_SELECTOR, ".playerHeader__nameWrapper h2"),
                     "role": self.get_text(By.CSS_SELECTOR, ".playerTeam strong"),
                     "price": self.get_text(By.XPATH, "//div[contains(@class, 'playerInfoItem') and .//strong[text()='Рыночная цена']]//span"),
                     "season": "-",

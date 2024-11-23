@@ -7,6 +7,7 @@ from config import HEADLESS_MODE
 class BaseScraper:
     def __init__(self):
         options = Options()
+        options.page_load_strategy = 'eager'
         if HEADLESS_MODE:
             options.add_argument("--headless")
 
