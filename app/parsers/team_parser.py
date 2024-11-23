@@ -1,5 +1,4 @@
 import time
-import requests
 from datetime import datetime, timedelta
 
 from selenium.webdriver.common.by import By
