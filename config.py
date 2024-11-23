@@ -2,7 +2,7 @@ import os
 
 # Настройки для Selenium
 DRIVER_PATH = os.path.join(os.getcwd(), "drivers", "chromedriver")
-HEADLESS_MODE = False
+HEADLESS_MODE = True
 
 # Таймауты
 IMPLICIT_WAIT = 10
