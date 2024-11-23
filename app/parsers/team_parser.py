@@ -1,17 +1,31 @@
 import time
+import requests
 from datetime import datetime, timedelta
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.ie.webdriver import WebDriver
 
 from app.parsers.base_parser import BaseParser
+from app.utils import transform_standings
 from logger import logger
 
 
 class TeamParser(BaseParser):
+    def __init__(self, driver: WebDriver):
+        super().__init__(driver)
+        self.participant = None
+        self.country = None
+
+
     def get_team_data(self, url: str, rivals: list[str]):
+        self.auth()
+
         logger.info(f"Парсинг команды: {url}")
         self.driver.get(url)
         time.sleep(4)
+
+        self.participant = self.driver.execute_script("return window.participant;")
+        self.country = self.driver.execute_script("return window.country_id;")
 
         result = {
             'name': self.get_text(By.CSS_SELECTOR, ".heading__name"),
@@ -22,74 +36,65 @@ class TeamParser(BaseParser):
             'next_game_date': '-',
         }
 
-        results_btn = self.find(By.CSS_SELECTOR, "a.results")
-        if not results_btn:
-            return result
-
-        results_btn.click()
-        time.sleep(4)
-
         filtered = list(filter(lambda r: r != result['name'], rivals))
-        logger.debug(f"Соперники: {filtered}")
+        page = 0
+        games = []
         current_date_minus_one_year = int((datetime.now() - timedelta(days=365)).timestamp())
 
+        logger.debug(f"Соперники: {filtered}")
+        print(f'send: https://46.flashscore.ninja/46/x/feed/pr_1_{self.country}_{self.participant}_{page}_3_ru-kz_1')
+
         while True:
-            time.sleep(3)
-            last = self.find(By.XPATH, "//div[@data-event-row='true'][last()]")
-            more = self.find(By.CSS_SELECTOR, ".event__more.event__more--static")
+            resp = requests.get(
+                f'https://46.flashscore.ninja/46/x/feed/pr_1_{self.country}_{self.participant}_{page}_3_ru-kz_1',
+                headers={
+                    "x-fsign": self.api_key,
+                })
 
-            print(last)
-            print(more)
+            data = [item for item in transform_standings(resp.text) if 'AA' in item]
 
-            if last is None and more is None:
+            print(data)
+
+            date = int(data[len(data) - 1]['AD'])
+
+            games += data
+
+            if date - current_date_minus_one_year > 0:
+                page += 1
+                continue
+            else:
+                print('Все гуд это последний матч!', datetime.fromtimestamp(int(date)))
                 break
 
-            event_time = last.find_element(By.CSS_SELECTOR, ".event__time").text.strip()
+        for game in games:
+            print("Game:", game)
+            if int(game['AD']) - current_date_minus_one_year > 0:
+                if game['PY'] == self.participant and game['AE'] in filtered:
+                    if game['AH'] == game['AG']:
+                        result['draws'] += 1
+                    if game['AH'] > game['AG']:
+                        result['wins'] += 1
+                    if game['AH'] < game['AG']:
+                        result['losses'] += 1
 
-            print(event_time)
+                if game['PX'] == self.participant and game['AF'] in filtered:
+                    if game['AG'] == game['AH']:
+                        result['draws'] += 1
+                    if game['AG'] > game['AH']:
+                        result['wins'] += 1
+                    if game['AG'] < game['AH']:
+                        result['losses'] += 1
 
-            if len(event_time.split(" ")) == 2:
-                print("no date")
-                self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", more)
-                time.sleep(3)
-                more.click()
-                continue
 
-            print(datetime.strptime(event_time, "%d.%m.%Y"))
+        logger.debug(f"{result}")
+        time.sleep(2)
 
-            if int((datetime.strptime(event_time, "%d.%m.%Y")).timestamp()) - current_date_minus_one_year > 0:
-                print("no time")
-                more.click()
-                continue
-
-            break
-
-        rows = self.find_all(By.XPATH, "//div[@data-event-row='true']")
-        for row in rows:
-            event_time = row.find_element(By.CSS_SELECTOR, ".event__time").text.strip()
-            home_team = row.find_element(By.XPATH,
-                                         "./div[contains(@class, 'event__homeParticipant')]/*[2]").text.strip()
-            away_team = row.find_element(By.XPATH,
-                                         "./div[contains(@class, 'event__awayParticipant')]/*[2]").text.strip()
-            result_button = row.find_element(By.CSS_SELECTOR, "button").text.strip()
-
-            if home_team not in filtered and away_team not in filtered:
-                continue
-
-            logger.debug(f"Данные: {home_team} - {away_team} - {result_button}")
-
-            if result_button == "В":
-                result['wins'] += 1
-
-            if result_button == "Н":
-                result['draws'] += 1
-
-            if result_button == "П":
-                result['losses'] += 1
 
         fixtures_btn = self.find(By.CSS_SELECTOR, "a.fixtures")
-        if not results_btn:
+        if fixtures_btn is None:
             return result
+
+        print("finds btn")
 
         fixtures_btn.click()
         time.sleep(4)
@@ -98,6 +103,8 @@ class TeamParser(BaseParser):
 
         if row is None:
             return result
+
+        print("finds row", row)
 
         home_team = row.find_element(By.CSS_SELECTOR, ".event__homeParticipant").text.strip()
         away_team = row.find_element(By.CSS_SELECTOR, ".event__awayParticipant").text.strip()

@@ -58,6 +58,14 @@ class MatchParser(BaseParser):
             return result
 
         standings_btn.click()
+        time.sleep(4)
+
+        standings_btn = self.find(By.XPATH, "//a[contains(@href, '#/standings/table')]")
+
+        if standings_btn is None:
+            return result
+
+        standings_btn.click()
         time.sleep(2)
 
         cols = self.find_all(By.XPATH, f"//div[contains(@class, 'ui-table__row') and .//a[text()='{team}']]//*[contains(@class, 'table__cell')]")
@@ -88,7 +96,7 @@ class MatchParser(BaseParser):
             return result
 
         standings_btn.click()
-        time.sleep(2)
+        time.sleep(4)
 
         cols = self.find_all(By.XPATH,
                              f"//div[contains(@class, 'ui-table__row') and .//a[text()='{team}']]//*[contains(@class, 'table__cell')]")
@@ -118,7 +126,7 @@ class MatchParser(BaseParser):
             return result
 
         standings_btn.click()
-        time.sleep(2)
+        time.sleep(4)
 
         cols = self.find_all(By.XPATH,
                              f"//div[contains(@class, 'ui-table__row') and .//a[text()='{team}']]//*[contains(@class, 'table__cell')]")
@@ -146,7 +154,7 @@ class MatchParser(BaseParser):
             return result
 
         standings_btn.click()
-        time.sleep(2)
+        time.sleep(4)
 
         cols = self.find_all(By.XPATH,
                              f"//div[contains(@class, 'ui-table__row') and .//a[text()='{team}']]//*[contains(@class, 'table__cell')]")
