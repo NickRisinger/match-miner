@@ -19,6 +19,7 @@ class PlayerParser(BaseParser):
                     "name": self.get_text(By.CSS_SELECTOR, ".playerHeader__nameWrapper h2"),
                     "role": self.get_text(By.CSS_SELECTOR, ".playerTeam strong"),
                     "price": self.get_text(By.XPATH, "//div[contains(@class, 'playerInfoItem') and .//strong[text()='Рыночная цена']]//span"),
+                    "team": "-",
                     "season": "-",
                     "rating": "-",
                     "games": "-",
@@ -31,6 +32,7 @@ class PlayerParser(BaseParser):
                 row = self.find(By.CSS_SELECTOR, "#league-table .careerTab__row:not(.careerTab__row--main)")
                 if row is not None:
                     player["season"] = row.find_element(By.CSS_SELECTOR, ".careerTab__season").text.strip()
+                    player["team"] = row. find_element(By.CSS_SELECTOR, ".careerTab__participant").text.strip()
                     stats = row.find_elements(By.CSS_SELECTOR, ".careerTab__stat")
                     player["rating"] = stats[0].text.strip()
                     player["games"] = stats[1].text.strip()
@@ -46,6 +48,7 @@ class PlayerParser(BaseParser):
                     "name": "-",
                     "role": "-",
                     "price": "-",
+                    "team": "-",
                     "season": "-",
                     "rating": "-",
                     "games": "-",

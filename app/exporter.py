@@ -18,7 +18,7 @@ class DataExporter:
             "дома_место1", "дома_в1", "дома_н1", "дома_п1", "дома_о1",
             "гости_место2", "гости_в2", "гости_н2", "гости_п2", "гости_о2",
             "форма_в1", "форма_н1", "форма_п1", "форма_в2", "форма_н2", "форма_п2",
-            "Имя", "Год_стат_игрок", "Амплуа", "Рейтинг", "Игр сыграно", "Голы", "Передачи",
+            "Команда", "Имя", "Год_стат_игрок", "Амплуа", "Рейтинг", "Игр сыграно", "Голы", "Передачи",
             "Желтые карточки", "Красные карточки", "Стоимость игрока",
             "выйгрыши_с_соседями_1", "ничьи_с_соседями_1", "проигрыши_с_соседями_1",
             "выйгрыши_с_соседями_2", "ничьи_с_соседями_2", "проигрыши_с_соседями_2",
@@ -68,8 +68,8 @@ class DataExporter:
             match['away_team_form']['draws'],
             match['away_team_form']['losses'],
         ] + [
-            player['name'], player['season'], player['role'], player['rating'], player['games'], player['goals'],
-            player['transfers'], player['yellow_cards'], player['red_cards'], player['price']
+            player['team'], player['name'], player['season'], player['role'], player['rating'], player['games'],
+            player['goals'], player['transfers'], player['yellow_cards'], player['red_cards'], player['price']
         ] + [
             match["home_team_rivals"]["wins"],
             match["home_team_rivals"]["draws"],
@@ -89,7 +89,7 @@ class DataExporter:
 
     def _build_player_row(self, player):
         return [""] * 30 + [
-            player['name'], player['season'], player['role'], player['rating'], player['games'], player['goals'],
+            player['team'], player['name'], player['season'], player['role'], player['rating'], player['games'], player['goals'],
             player['transfers'], player['yellow_cards'], player['red_cards'], player['price']
         ]
 

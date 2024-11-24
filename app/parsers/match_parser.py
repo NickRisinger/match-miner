@@ -24,12 +24,15 @@ class MatchParser(BaseParser):
         return [el.text.strip() for el in elements]
 
     def get_inactive_player_links(self):
-        elements = self.find_all(By.CSS_SELECTOR, ".lf__participantNew a")
+        element = self.find(By.XPATH,
+                            "//div[contains(@class, 'section')][.//div[contains(@class, 'section__title') and text()='Не сыграют']]")
 
-        if not elements:
+        if not element:
             return []
 
-        return [el.get_attribute("href").strip() for el in elements]
+        players = element.find_elements(By.CSS_SELECTOR, ".lf__participantNew a")
+
+        return [el.get_attribute("href").strip() for el in players]
 
     def get_rivals(self):
         standings_btn = self.find(By.XPATH, "//a[contains(@href, '#/standings')]")
